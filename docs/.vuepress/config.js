@@ -1,3 +1,8 @@
+const path = require("path")
+const rootpath = path.dirname(__dirname) //执行一次dirname将目录定位到docs目录
+const utils = require('./utils/index.js');
+const filehelper = require('./utils/initPage.js');
+
 module.exports = {
   title: 'Tenet Blog', // 标题
   description: 'Just learn javascript', // 描述
@@ -18,6 +23,7 @@ module.exports = {
       // [以 '/' 结尾的默认指向该路径下README.md文件]
       { text: 'Home', link: '/'},
       // 多项
+      { text: '前端', link: '/web/'},  
       { 
         text: '联系我',
         items: [
@@ -26,41 +32,24 @@ module.exports = {
         ]
       }  
     ],
-    // 侧边栏菜单( 一个模块对应一个菜单形式 )
-    sidebar: {
-      '/javascript/': [
-        // 多菜单形式
-        {
-          // 菜单名
-          title: 'javascript',
-          // 子菜单
-          children: [
-            // ['','']=>[路径,标题]
-            // 或者写成 '路径',标题自动识别为该地址的文件中的h1标题
-            // 不以 '/' 结尾的就是指向.md文件
-            ['/javascript/one','第一个']    
-          ]
-        }
-      ],
-      '/javascript1/': [
-        // 多菜单形式
-        {
-          // 菜单名
-          title: 'javascript1',
-          // 子菜单
-          children: [
-            // ['','']=>[路径,标题]
-            // 或者写成 '路径',标题自动识别为该地址的文件中的h1标题
-            // 不以 '/' 结尾的就是指向.md文件
-            ['/javascript1/one','第一个']    
-          ]
-        }
-      ]
-    },
+    // 侧边栏菜单( 一个模块对应一个菜单形式 )vue
+    sidebar: [
+      utils.genSidebar('javascript', filehelper.getFileName(rootpath+"/web/javascript/")),
+      utils.genSidebar('vue', filehelper.getFileName(rootpath+"/web/vue/")),
+    ], // 侧边栏配置
     displayAllHeaders: true,
   },
   base: '/', // 基础地址
   markdown: {
-    lineNumbers: true // 代码块显示行号
+    // lineNumbers: true, // 代码块显示行号
+    // // markdown-it-anchor 的选项
+    // anchor: { permalink: false },
+    // // markdown-it-toc 的选项
+    // toc: { includeLevel: [1, 2] },
+    // extendMarkdown: md => {
+    //   // 使用更多的 markdown-it 插件!
+    //   md.use(require('markdown-it-xxx'))
+    // }
   },
+  plugins: ['@vuepress/back-to-top', '@vuepress/nprogress']
 }
