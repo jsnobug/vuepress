@@ -36,6 +36,8 @@ module.exports = {
     sidebar: [
       utils.genSidebar('javascript', filehelper.getFileName(rootpath+"/web/javascript/")),
       utils.genSidebar('vue', filehelper.getFileName(rootpath+"/web/vue/")),
+      utils.genSidebar('git', filehelper.getFileName(rootpath+"/web/git/")),
+      utils.genSidebar('mockjs', filehelper.getFileName(rootpath+"/web/mock/")),
     ], // 侧边栏配置
     displayAllHeaders: true,
   },
