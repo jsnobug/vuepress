@@ -9,9 +9,9 @@ module.exports = {
   // 注入到当前页面的 HTML <head> 中的标签
   head: [
     // 增加一个自定义的 favicon(网页标签的图标)
-    // 这里的 '/' 指向 docs/.vuepress/public 文件目录 
+    // 这里的 '/' 指向 docs/.vuepress/public 文件目录
     // 即 docs/.vuepress/public/img/geass-bg.ico
-    ['link', { rel: 'icon', href: '/favicon.ico' }], 
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
   ],
   themeConfig: {
     sidebarDepth: 4, // e'b将同时提取markdown中h2 和 h3 标题，显示在侧边栏上。
@@ -23,14 +23,14 @@ module.exports = {
       // [以 '/' 结尾的默认指向该路径下README.md文件]
       { text: 'Home', link: '/'},
       // 多项
-      { text: '前端', link: '/web/'},  
-      { 
+      { text: '前端', link: '/web/'},
+      {
         text: '联系我',
         items: [
           {text: 'github', link: 'https://github.com/jsnobug'},
           {text: 'gitee', link: 'https://gitee.com/xiao_zheng_123'},
         ]
-      }  
+      }
     ],
     // 侧边栏菜单( 一个模块对应一个菜单形式 )vue
     sidebar: [
@@ -38,6 +38,7 @@ module.exports = {
       utils.genSidebar('vue', filehelper.getFileName(rootpath+"/web/vue/")),
       utils.genSidebar('git', filehelper.getFileName(rootpath+"/web/git/")),
       utils.genSidebar('mockjs', filehelper.getFileName(rootpath+"/web/mock/")),
+      utils.genSidebar('sentry', filehelper.getFileName(rootpath+"/web/sentry/")),
     ], // 侧边栏配置
     displayAllHeaders: true,
   },

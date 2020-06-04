@@ -1,5 +1,5 @@
 const fs = require('fs');
-var filehelper = {
+let filehelper = {
   getFileName:function(rpath) {
     let filenames = []
     fs.readdirSync(rpath).forEach(filepath => {
