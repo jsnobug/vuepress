@@ -34,11 +34,12 @@ module.exports = {
     ],
     // 侧边栏菜单( 一个模块对应一个菜单形式 )vue
     sidebar: [
+      utils.genSidebar('无用大棒', filehelper.getFileName(rootpath+"/web/无用大棒/")),
+      utils.genSidebar('htmlAndCss', filehelper.getFileName(rootpath+"/web/htmlAndCss/")),
       utils.genSidebar('javascript', filehelper.getFileName(rootpath+"/web/javascript/")),
       utils.genSidebar('vue', filehelper.getFileName(rootpath+"/web/vue/")),
       utils.genSidebar('git', filehelper.getFileName(rootpath+"/web/git/")),
       utils.genSidebar('mockjs', filehelper.getFileName(rootpath+"/web/mock/")),
-      utils.genSidebar('sentry', filehelper.getFileName(rootpath+"/web/sentry/")),
     ], // 侧边栏配置
     displayAllHeaders: true,
   },
