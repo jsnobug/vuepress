@@ -38,6 +38,7 @@ module.exports = {
       utils.genSidebar('htmlAndCss', filehelper.getFileName(rootpath+"/web/htmlAndCss/")),
       utils.genSidebar('javascript', filehelper.getFileName(rootpath+"/web/javascript/")),
       utils.genSidebar('vue', filehelper.getFileName(rootpath+"/web/vue/")),
+      utils.genSidebar('HTTP', filehelper.getFileName(rootpath+"/web/http/")),
       utils.genSidebar('git', filehelper.getFileName(rootpath+"/web/git/")),
       utils.genSidebar('mockjs', filehelper.getFileName(rootpath+"/web/mock/")),
     ], // 侧边栏配置
