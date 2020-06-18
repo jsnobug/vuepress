@@ -41,6 +41,7 @@ module.exports = {
       utils.genSidebar('HTTP', filehelper.getFileName(rootpath+"/web/http/")),
       utils.genSidebar('git', filehelper.getFileName(rootpath+"/web/git/")),
       utils.genSidebar('mockjs', filehelper.getFileName(rootpath+"/web/mock/")),
+      utils.genSidebar('code-review', filehelper.getFileName(rootpath+"/web/code-review/")),
     ], // 侧边栏配置
     displayAllHeaders: true,
   },
