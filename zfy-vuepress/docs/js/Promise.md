@@ -1,5 +1,51 @@
 # Promise
 
+```js
+// 不使用await
+function http() {
+    axios.get('url')
+    .then(r => {
+      doIt()
+    })
+    .catch(e => {
+      console.log(e)
+    })
+}
+
+function doIt() {
+  // do something
+}
+
+// 使用await
+
+function http() {
+  return new Promise((resolve, reject) => {
+    axios.get('url')
+    .then(r => {
+      resolve('success')
+    })
+    .catch(e => {
+      reject('error')
+    })
+  })
+}
+
+function doIt() {
+  // do something
+}
+
+async function fn() {
+    let p = await http()
+    if (p === 'success') {
+      doIt()
+    } else {
+     ....
+    }
+}
+
+fn()
+```
+
 js编程中编写异步代码的方式。
 
 ## 基本用法
@@ -197,6 +243,58 @@ async function test(){
 }
 test()
 ```
+
+```vue
+    methods: {
+      async textHandle (resolve) {
+        try {
+          await this.twoHandle().then((message) => {
+            console.log(message)
+          })
+          await this.oneHandle().then((message) => {
+            console.log(message)
+          })
+          await this.threeHandle().then((message) => {
+            console.log(message)
+          })
+          await this.fourHandle()
+        } catch (e) {
+          console.log(e, 'fdasfasd') // fourHandle错误返回值
+        }
+        return 'textHandle返回值'
+        // console.log('%c测试啊啊啊啊啊', 'color:red;font-size:50px;')
+      },
+      textHandle2 () {
+        this.textHandle().then((message) => {
+          console.log(message) // textHandle返回值
+        }).catch((e) => {
+          console.log(e, 'fdasfasfdsfasdf')
+        })
+      },
+      oneHandle () {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('成功-quick!') // 代码正常执行！
+          }, 250)
+        })
+      },
+      twoHandle () {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('成功-slow!') // 代码正常执行！
+          }, 50)
+        })
+      },
+      threeHandle () {
+        return Promise.resolve('成功-风飒飒')
+      },
+      fourHandle () {
+        return Promise.reject('fourHandle错误返回值')
+      }
+    }
+```
+
+
 
 ## javascript执行机制
 
