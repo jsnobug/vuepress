@@ -1179,3 +1179,370 @@ var clonedObj = { ...obj1 };// 克隆后的对象: { foo: "bar", x: 42 }
 var mergedObj = { ...obj1, ...obj2 };// 合并后的对象: { foo: "baz", x: 42, y: 13 }
 ```
 
+## 八、Class
+
+### super关键字
+
+#### super当作函数使用
+
+- super 作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次 super() 函数。注意：作为函数时，super() 只能用在子类的构造函数之中，用在其他地方就会报错。
+- super 作为函数调用时，内部的 this 指的是子类实例
+
+```js
+  class A {
+    constructor () {
+      this.text()
+    }
+    text () {
+      console.log('AAA')
+    }
+  }
+  class B extends A {
+    constructor () {
+      super() // 必须先调用super()
+    }
+    text () {
+      console.log('BBB')
+    }
+  }
+  let b = new B() // 打印 BBB，this指向子构造函数
+```
+
+#### super作为对象使用
+
+super 作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
+
+##### super在普通方法中指向及this的指向
+
+```js
+// 指向父类原型对象上
+class A {
+  p() {
+    return 2;
+  }
+}
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.p()); // 2  此时的super指向父类原型对象，即 A.prototype
+  }
+}
+let b = new B();　　//2
+```
+
+```js
+// 由于在普通方法中的 super 指向父类的原型对象，所以如果父类上的方法或属性是定义在实例上的，就无法通过 super 调用的。
+class A {
+  constructor() {  //在构造函数上定义的属性和方法相当于定义在父类实例上的，而不是原型对象上
+    this.p = 2;
+  }
+}
+class B extends A {
+  get m() {
+    return super.p;
+  }
+}
+let b = new B();
+console.log(b.m) // undefined
+
+// class A prototype 有constructor
+// class B prototype 有constructor get函数 m:undefined
+// A 有 p = 2
+```
+
+```js
+// 在子类普通方法中通过 super 调用父类的方法时，方法内部的 this 指向的是当前的子类实例。
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  print() {
+    console.log(this.x);
+  }
+}
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+　　 super.y = 123;　　//如果通过super对某个属性赋值，这时super就是this，赋值的属性会变成子类实例的属性。
+  }
+  m() {
+    super.print();
+  }
+}
+let b = new B();
+b.m() // 2
+console.log(b.y);  //123
+```
+
+##### super在静态方法中指向及this的指向
+
+```js
+// super作为对象，用在静态方法之中，这时 super 将直接指向父类，而不是父类的原型对象。
+  class Parent {
+    static myMethod(msg) {
+      console.dir(this) // Class Child
+      console.log('static', msg)
+    }
+    myMethod(msg) {
+      console.dir(this) // Child
+      console.log('instance', msg)
+    }
+  }
+  class Child extends Parent {
+    static myMethod(msg) {
+      super.myMethod(msg)
+    }
+    myMethod(msg) {
+      super.myMethod(msg)
+    }
+  }
+  Child.myMethod(1)
+  var child = new Child();
+  child.myMethod(2)
+```
+
+```js
+// 在子类的静态方法中通过 super 调用父类的方法时，方法内部的 this 指向当前的子类，而不是子类的实例。
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  static print() {
+    console.log(this.x);
+  }
+}
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+  }
+  static m() {
+    super.print();
+  }
+}
+B.x = 3;
+B.m() // 3
+```
+
+## 九、对象简化写法
+
+- 同名的属性可以省略不写
+- 对象中的方法中的 : function 可以省略不写
+
+```js
+const name = 'Jack';
+const age = 25;
+const sex = '女';
+const studentES6 = {
+    name,// 同名的属性可以省略不写
+    age,
+    sex,
+    getName () { // 可以省略方法中的 : function   es5写法： getName: function () {}
+        return this.name;
+    }
+};
+console.log('ES6', studentES6);
+console.log('ES6', studentES6.getName());
+```
+
+## 十、Symbol 基本数据类型
+
+是一种新的数据类型，表示独一无二的值，类似字符串。
+
+### 特点
+
+1. Symbol的值是唯一的，用来解决命名冲突问题。
+2. Symbol的值不能和其他数据进行运算。
+3. Symbol定义的对象属性不能使用For...in循环遍历，但是可以使用Reflect.ownKeys获取对象所有键名
+
+```js
+// 创建Symbol
+let a = Symbol('text')
+let b = Symbol.for('text')
+a === b // false 唯一值
+
+// For in不能遍历
+var obj = {[Symbol('s')]: 11}
+for (let key in obj) {
+    console.log(obj[key]) // 没有内容
+}
+console.log(Reflect.ownKeys(obj)) // [Symbol(s)]
+```
+
+### 对象添加symbol类型的属性
+
+```js
+  // 向对象中添加方法 up down
+  let game = {
+    up () {},
+    down () {}
+  }
+  let methods = {
+    up: Symbol(),
+    down: Symbol()
+  }
+  game[methods.up] = function () {}
+  game[methods.down] = function () {}
+  console.log(game)
+  console.log(game[methods.up])
+```
+
+### Symbol内置属性方法
+
+## 十一、迭代器
+
+**Symbol.iterator** 为每一个对象定义了默认的迭代器。该迭代器可以被 `for...of` 循环使用。
+
+### 具有iterator接口的数据（可用for of遍历）
+
+Array,Arguments,Set,Map,String,TypeArray,NodeList
+
+### 原理
+
+- 创建一个指针对象，指向当前数据结构的起始位置
+- 第一次调用对象的next方法，指针自动指向数据结构第一个成员
+- 接下来不断调用next方法，指针一直往后移动，直到指向最后一个成员
+- 每调用next返回一个含有value和done属性对象
+
+```js
+  let name = ['1', '2', '3', '4']
+  console.log(name)
+// 返回指针对象
+  let iterator = name[Symbol.iterator]()
+  console.log(iterator)
+// next移动指针
+  console.log(iterator.next())
+  console.log(iterator.next())
+  console.log(iterator.next())
+  console.log(iterator.next())
+  console.log(iterator.next()) // done: true,value: undefined
+```
+
+### 应用：自定义遍历数据
+
+```js
+const banji = {
+    stus: [
+        'xiaozheng',
+        'xiaotian',
+        'knight',
+        'xiaoning'
+    ],
+    [Symbol.iterator] () {
+        // 索引变量
+        let index = 0
+        let _this = this
+        return {
+            next () {
+                if (index < _this.stus.length) {
+                    const result = {
+                        value: _this.stus[index],
+                        done: false
+                    }
+                    index++
+                    return result
+                } else {
+                    return {
+                        value: undefined,
+                        done: true
+                    }
+                }
+            }
+        }
+    }
+}
+for (let value of banji) {
+    console.log(value)
+}
+// banji.stus.forEach()
+```
+
+## 十二、生成器
+
+- 生成器其实是一个特殊函数
+- 解决异步编程
+- yield是函数代码分割符
+- next方法传参数，为上一个yeild语句的整体返回值
+
+```js
+  function * get (arg) {
+    console.log(arg)
+    console.log(111)
+    let one = yield '一'
+    console.log(one)
+    console.log(222)
+    yield '二'
+    console.log(333)
+    yield '三'
+    console.log(444)
+  }
+  let iterator = get('AAA')
+  console.log(iterator.next()) // value: '一',done: false   AAA 111
+  console.log(iterator.next('one'))  // one
+  console.log(iterator.next())
+  console.log(iterator.next()) // value: undefined, done: true
+```
+
+### 应用
+
+```js
+// 解决异步轮回地狱问题
+function one () {
+    setTimeout(() => {
+        console.log('1')
+        iterator.next()
+    }, 1000)
+}
+function two () {
+    setTimeout(() => {
+        console.log('2')
+        iterator.next()
+    }, 2000)
+}
+function three () {
+    setTimeout(() => {
+        console.log('3')
+        iterator.next()
+    }, 3000)
+}
+function * gen () {
+    yield one()
+    yield two()
+    yield three()
+}
+let iterator = gen()
+iterator.next()
+```
+
+```js
+function getUsers () {
+    setTimeout(() => {
+        let data = '用户数据'
+        iterator.next(data)
+    }, 1000)
+}
+function getOrders () {
+    setTimeout(() => {
+        let data = '订单数据'
+        iterator.next(data)
+    }, 1000)
+}
+function getGoods () {
+    setTimeout(() => {
+        let data = '商品数据'
+        iterator.next(data)
+    }, 1000)
+}
+function * gen () {
+    let userData = yield getUsers()
+    let orderDataData = yield getOrders(userData)
+    yield getGoods(orderDataData)
+}
+let iterator = gen()
+iterator.next()
+```
+
+## 十三、Promise
+
+详细见Promise文章
