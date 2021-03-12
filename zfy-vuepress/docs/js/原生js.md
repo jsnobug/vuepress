@@ -357,3 +357,588 @@ function f1() {
   }
 }
 ```
+
+在这段代码中，f1的作用域指向有全局作用域(window)和它本身，而f2的作用域指向全局作用域(window)、f1和它本身。而且作用域是从最底层向上找，直到找到全局作用域window为止，如果全局还没有的话就会报错。就这么简单一件事情！
+
+闭包产生的本质就是，当前环境中存在指向父级作用域的引用。还是举上面的例子:
+
+```js
+function f1() {
+  var a = 2
+  function f2() {
+    console.log(a);//2
+  }
+  return f2;
+}
+var x = f1();
+x();
+```
+
+这里x会拿到父级作用域中的变量，输出2。因为在当前环境中，含有对f2的引用，f2恰恰引用了window、f1和f2的作用域。因此f2可以访问到f1的作用域的变量。
+
+那是不是只有返回函数才算是产生了闭包呢？、
+
+回到闭包的本质，我们只需要让父级作用域的引用存在即可，因此我们还可以这么做：
+
+```js
+var a = 3
+var f3;
+function f1() {
+  var a = 2
+  f3 = function() {
+    console.log(a);
+  }
+}
+f1();
+f3();
+```
+
+让f1执行，给f3赋值后，等于说现在`f3拥有了window、f1和f3本身这几个作用域的访问权限`，还是自底向上查找，`最近是在f1`中找到了a,因此输出2。
+
+在这里是外面的变量`f3存在着父级作用域的引用`，因此产生了闭包，形式变了，本质没有改变。
+
+### 闭包有哪些表现形式?
+
+明白了本质之后，我们就来看看，在真实的场景中，究竟在哪些地方能体现闭包的存在？
+
+1. 返回一个函数。刚刚已经举例。
+
+2. 作为函数参数传递
+
+   ```js
+   var a = 1;
+   function foo(){
+     var a = 2;
+     function baz(){
+       console.log(a);
+     }
+     bar(baz);
+   }
+   function bar(fn){
+     // 这就是闭包
+     fn();
+   }
+   // 输出2，而不是1
+   foo();
+   ```
+
+3. 在定时器、事件监听、Ajax请求、跨窗口通信、Web Workers或者任何异步中，只要使用了回调函数，实际上就是在使用闭包。
+
+   以下的闭包保存的仅仅是window和当前作用域。
+
+   ```js
+   // 定时器
+   setTimeout(function timeHandler(){
+     console.log('111');
+   }，100)
+   
+   // 事件监听
+   $('#app').click(function(){
+     console.log('DOM Listener');
+   })
+   ```
+
+4. IIFE(立即执行函数表达式)创建闭包, 保存了`全局作用域window`和`当前函数的作用域`，因此可以全局的变量。
+
+```js
+var a = 2;
+(function IIFE(){
+  // 输出2
+  console.log(a);
+})();
+```
+
+### 如何解决下面的循环输出问题？
+
+```js
+for(var i = 1; i <= 5; i ++){
+  setTimeout(function timer(){
+    console.log(i)
+  }, 0)
+}
+```
+
+为什么会全部输出6？如何改进，让它输出1，2，3，4，5？(方法越多越好)
+
+因为setTimeout为宏任务，由于JS中单线程eventLoop机制，在主线程同步任务执行完后才去执行宏任务，因此循环结束后setTimeout中的回调才依次执行，但输出i的时候当前作用域没有，往上一级再找，发现了i,此时循环已经结束，i变成了6。因此会全部输出6。
+
+解决方法：
+
+1、利用IIFE(立即执行函数表达式)当每次for循环时，把此时的i变量传递到定时器中
+
+```js
+for(var i = 1;i <= 5;i++){
+    (function(j){
+        setTimeout(function timer(){
+            console.log(j)
+        }, 0)
+    })(i)
+}
+```
+
+2、给定时器传入第三个参数, 作为timer函数的第一个函数参数
+
+```js
+for(var i=1;i<=5;i++){
+  setTimeout(function timer(j){
+    console.log(j)
+  }, 0, i)
+}
+```
+
+3、使用ES6中的let
+
+```js
+for(let i = 1; i <= 5; i++){
+  setTimeout(function timer(){
+    console.log(i)
+  },0)
+}
+```
+
+let使JS发生革命性的变化，让JS有函数作用域变为了块级作用域，用let后作用域链不复存在。代码的作用域以块级为单位，以上面代码为例:
+
+```js
+// i = 1
+{
+  setTimeout(function timer(){
+    console.log(1)
+  },0)
+}
+// i = 2
+{
+  setTimeout(function timer(){
+    console.log(2)
+  },0)
+}
+// i = 3
+...
+```
+
+## 五、原型链
+
+### 1.原型对象和构造函数有何关系？
+
+在JavaScript中，每当定义一个函数数据类型(普通函数、类)时候，都会天生自带一个prototype属性，这个属性指向函数的原型对象。
+
+当函数经过new调用时，这个函数就成为了构造函数，返回一个全新的实例对象，这个实例对象有一个__proto__属性，指向构造函数的原型对象。
+
+![img](https://user-gold-cdn.xitu.io/2019/10/20/16de955a81892535?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+### 2.能不能描述一下原型链？
+
+JavaScript对象通过__proto__ 指向父类对象，直到指向Object对象为止，这样就形成了一个原型指向的链条, 即原型链。
+
+![img](https://user-gold-cdn.xitu.io/2019/10/20/16de955ca89f6091?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+- 对象的 hasOwnProperty() 来检查对象自身中是否含有该属性
+- 使用 in 检查对象中是否含有某个属性时，如果对象中没有但是原型链中有，也会返回 true
+
+```js
+  console.log(object1.hasOwnProperty('toString')); // false
+  console.log('toString' in object1); // true
+```
+
+- Object.setPrototypeOf(obj, null或{}) 设置实列对象的对象原型
+- Object.getPrototypeOf(obj)  获取实列对象的对象原型
+
+```js
+let obj = {}
+Object.getPrototypeOf(obj)  === obj.__proto__ // true
+```
+
+## 六、JS如何实现继承
+
+### 第一种: 借助call
+
+```js
+  function Parent1(){
+    this.name = 'parent1';
+  }
+  function Child1(){
+    Parent1.call(this);
+    this.type = 'child1'
+  }
+  console.log(new Child1);
+```
+
+这样写的时候子类虽然能够拿到父类的属性值，但是问题是父类原型对象中一旦存在方法那么子类无法继承。那么引出下面的方法。
+
+### 第二种: 借助原型链
+
+```js
+function Parent2() {
+    this.name = 'parent2';
+    this.play = [1, 2, 3]
+}
+function Child2() {
+    this.type = 'child2';
+}
+Child2.prototype = new Parent2();
+
+console.log(new Child2());
+```
+
+看似没有问题，父类的方法和属性都能够访问，但实际上有一个潜在的不足。举个例子：
+
+```js
+var s1 = new Child2();
+var s2 = new Child2();
+s1.play.push(4);
+console.log(s1.play, s2.play);
+```
+
+明明我只改变了s1的play属性，为什么s2也跟着变了呢？很简单，因为两个实例使用的是同一个原型对象。
+
+### 第三种：将前两种组合
+
+```js
+  function Parent3 () {
+    this.name = 'parent3';
+    this.play = [1, 2, 3];
+  }
+  function Child3() {
+    Parent3.call(this);
+    this.type = 'child3';
+  }
+  Child3.prototype = new Parent3();
+  var s3 = new Child3();
+  var s4 = new Child3();
+  s3.play.push(4);
+  console.log(s3.play, s4.play);
+```
+
+之前的问题都得以解决。但是这里又徒增了一个新问题，那就是Parent3的构造函数会多执行了一次（Child3.prototype = new Parent3();）。这是我们不愿看到的。那么如何解决这个问题？
+
+### 第四种: 组合继承的优化1
+
+```js
+  function Parent4 () {
+    this.name = 'parent4';
+    this.play = [1, 2, 3];
+  }
+  function Child4() {
+    Parent4.call(this);
+    this.type = 'child4';
+  }
+  Child4.prototype = Parent4.prototype;
+```
+
+子类实例的构造函数是Parent4，显然这是不对的，应该是Child4。
+
+### 第五种(最推荐使用): 组合继承的优化1
+
+```js
+  function Parent5 () {
+    this.name = 'parent5';
+    this.play = [1, 2, 3];
+  }
+  function Child5() {
+    Parent5.call(this);
+    this.type = 'child5';
+  }
+  Child5.prototype = Object.create(Parent5.prototype); // 提供新对象的__proto__
+  Child5.prototype.constructor = Child5;
+```
+
+这是最推荐的一种方式，接近完美的继承，它的名字也叫做寄生组合继承。
+
+### ES6的extends被编译后的JavaScript代码
+
+ES6的代码最后都是要在浏览器上能够跑起来的，这中间就利用了babel这个编译工具，将ES6的代码编译成ES5让一些不支持新语法的浏览器也能运行。
+
+```js
+function _possibleConstructorReturn(self, call) {
+    // ...
+    return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+    // ...
+    //看到没有
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            enumerable: false,
+            writable: true,
+            configurable: true
+        }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+
+var Parent = function Parent() {
+    // 验证是否是 Parent 构造出来的 this
+    _classCallCheck(this, Parent);
+};
+
+var Child = (function (_Parent) {
+    _inherits(Child, _Parent);
+
+    function Child() {
+        _classCallCheck(this, Child);
+
+        return _possibleConstructorReturn(this, (Child.__proto__ || Object.getPrototypeOf(Child)).apply(this, arguments));
+    }
+
+    return Child;
+}(Parent));
+```
+
+核心是_inherits函数，可以看到它采用的依然也是第五种方式————寄生组合继承方式，同时证明了这种方式的成功。不过这里加了一个Object.setPrototypeOf(subClass, superClass)，这是用来干啥的呢？
+
+答案是用来继承父类的静态方法。这也是原来的继承方式疏忽掉的地方。
+
+```js
+追问: 面向对象的设计一定是好的设计吗？
+```
+
+不一定。从继承的角度说，这一设计是存在巨大隐患的。
+
+### 从设计思想上谈谈继承本身的问题
+
+假如现在有不同品牌的车，每辆车都有drive、music、addOil这三个方法。
+
+```js
+class Car{
+  constructor(id) {
+    this.id = id;
+  }
+  drive(){
+    console.log("wuwuwu!");
+  }
+  music(){
+    console.log("lalala!")
+  }
+  addOil(){
+    console.log("哦哟！")
+  }
+}
+class otherCar extends Car{}
+```
+
+现在可以实现车的功能，并且以此去扩展不同的车。
+
+但是问题来了，新能源汽车也是车，但是它并不需要addOil(加油)。
+
+如果让新能源汽车的类继承Car的话，也是有问题的，俗称"大猩猩和香蕉"的问题。大猩猩手里有香蕉，但是我现在明明只需要香蕉，却拿到了一只大猩猩。也就是说加油这个方法，我现在是不需要的，但是由于继承的原因，也给到子类了。
+
+```js
+继承的最大问题在于：无法决定继承哪些属性，所有属性都得继承。
+```
+
+当然你可能会说，可以再创建一个父类啊，把加油的方法给去掉，但是这也是有问题的，一方面父类是无法描述所有子类的细节情况的，为了不同的子类特性去增加不同的父类，`代码势必会大量重复`，另一方面一旦子类有所变动，父类也要进行相应的更新，`代码的耦合性太高`，维护性不好。
+
+那如何来解决继承的诸多问题呢？
+
+用组合，这也是当今编程语法发展的趋势，比如golang完全采用的是面向组合的设计方式。
+
+顾名思义，面向组合就是先设计一系列零件，然后将这些零件进行拼装，来形成不同的实例或者类。
+
+```js
+function drive(){
+  console.log("wuwuwu!");
+}
+function music(){
+  console.log("lalala!")
+}
+function addOil(){
+  console.log("哦哟！")
+}
+
+let car = compose(drive, music, addOil);
+let newEnergyCar = compose(drive, music);
+```
+
+代码干净，复用性也很好。这就是面向组合的设计方式。
+
+## 七、函数的arguments为什么不是数组？如何转化成数组？
+
+因为arguments本身并不能调用数组方法，它是一个另外一种对象类型，只不过属性从0开始排，依次为0，1，2...最后还有callee和length属性。我们也把这样的对象称为类数组。
+
+常见的类数组还有：
+
+- 1. 用getElementsByTagName/ClassName()获得的HTMLCollection
+- 1. 用querySelector获得的nodeList
+
+那这导致很多数组的方法就不能用了，必要时需要我们将它们转换成数组，有哪些方法呢？
+
+### 1. Array.prototype.slice.call()
+
+```js
+function sum(a, b) {
+  let args = Array.prototype.slice.call(arguments);
+  console.log(args.reduce((sum, cur) => sum + cur));//args可以调用数组原生的方法啦
+}
+sum(1, 2);//3
+```
+
+### 2. Array.from()
+
+```js
+function sum(a, b) {
+  let args = Array.from(arguments);
+  console.log(args.reduce((sum, cur) => sum + cur));//args可以调用数组原生的方法啦
+}
+sum(1, 2);//3
+```
+
+这种方法也可以用来转换Set和Map哦！
+
+### 3. ES6展开运算符
+
+```js
+function sum(a, b) {
+  let args = [...arguments];
+  console.log(args.reduce((sum, cur) => sum + cur));//args可以调用数组原生的方法啦
+}
+sum(1, 2);//3
+```
+
+### 4. 利用concat+apply
+
+```js
+function sum(a, b) {
+  let args = Array.prototype.concat.apply([], arguments);//apply方法会把第二个参数展开
+  console.log(args.reduce((sum, cur) => sum + cur));//args可以调用数组原生的方法啦
+}
+sum(1, 2);//3
+```
+
+当然，最原始的方法就是再创建一个数组，用for循环把类数组的每个属性值放在里面，过于简单，就不浪费篇幅了。
+
+## 八、forEach中return有效果吗？如何中断forEach循环？
+
+在forEach中用return不会返回，函数会继续执行。
+
+```js
+let nums = [1, 2, 3];
+nums.forEach((item, index) => {
+  return;//无效
+})
+```
+
+中断方法：
+
+1. 使用try监视代码块，在需要中断的地方抛出异常。
+2. 官方推荐方法（替换方法）：用every和some替代forEach函数。every在碰到return false的时候，中止循环。some在碰到return true的时候，中止循环
+
+## 九、JS判断数组中是否包含某个值
+
+### 方法一：array.indexOf
+
+```js
+// 此方法判断数组中是否存在某个值，如果存在，则返回数组元素的下标，否则返回-1。
+var arr=[1,2,3,4];
+var index=arr.indexOf(3);
+console.log(index);
+```
+
+### 方法二：array.includes(searcElement[,fromIndex])
+
+```js
+// 此方法判断数组中是否存在某个值，如果存在返回true，否则返回false
+var arr=[1,2,3,4];
+if(arr.includes(3)) {
+    console.log("存在");
+}  else {
+    console.log("不存在");
+} 
+```
+
+### 方法三：array.find(callback[,thisArg])
+
+```js
+// 返回数组中满足条件的第一个元素的值，如果没有，返回undefined
+var arr=[1,2,3,4];
+var result = arr.find(item =>{
+    return item > 3
+});
+console.log(result);
+```
+
+### 方法四：array.findeIndex(callback[,thisArg])
+
+```js
+// 返回数组中满足条件的第一个元素的下标，如果没有找到，返回-1]
+var arr=[1,2,3,4];
+var result = arr.findIndex(item =>{
+    return item > 3
+});
+console.log(result);
+```
+
+当然，for循环当然是没有问题的，这里讨论的是数组方法，就不再展开了。
+
+## 十、JS中flat--数组扁平化
+
+对于前端项目开发过程中，偶尔会出现层叠数据结构的数组，我们需要将多层级数组转化为一级数组（即提取嵌套数组元素最终合并为一个数组），使其内容合并且展开。那么该如何去实现呢？
+
+需求:多维数组=>一维数组
+
+```js
+let ary = [1, [2, [3, [4, 5]]], 6];// -> [1, 2, 3, 4, 5, 6]
+let str = JSON.stringify(ary);
+```
+
+### 1. 调用ES6中的flat方法
+
+```js
+// var newArray = arr.flat([depth])
+ary = ary.flat(Infinity);
+```
+
+### 2. replace + split
+
+```js
+ary = str.replace(/(\[|\])/g, '').split(',')
+```
+
+### 3. replace + JSON.parse
+
+```js
+str = str.replace(/(\[|\])/g, '');
+str = '[' + str + ']';
+ary = JSON.parse(str);
+```
+
+### 4. 普通递归
+
+```js
+let result = [];
+let fn = function(ary) {
+  for(let i = 0; i < ary.length; i++) {
+    let item = ary[i];
+    if (Array.isArray(ary[i])){
+      fn(item);
+    } else {
+      result.push(item);
+    }
+  }
+}
+```
+
+### 5. 利用reduce函数迭代
+
+```js
+function flatten(ary) {
+    return ary.reduce((pre, cur) => {
+        return pre.concat(Array.isArray(cur) ? flatten(cur) : cur);
+    }, []);
+}
+let ary = [1, 2, [3, 4], [5, [6, 7]]]
+console.log(flatten(ary))
+```
+
+### 6：扩展运算符
+
+```js
+//只要有一个元素有数组，那么循环继续
+while (ary.some(Array.isArray)) {
+  ary = [].concat(...ary);
+}
+```
+
+## 十一、JS数组的高阶函数--基础
+
