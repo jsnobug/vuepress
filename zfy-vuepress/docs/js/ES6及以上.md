@@ -1181,6 +1181,132 @@ var mergedObj = { ...obj1, ...obj2 };// 合并后的对象: { foo: "baz", x: 42,
 
 ## 八、Class
 
+默认严格模式
+
+### 基本语法
+
+```ts
+// 定义
+class 类名 {
+    属性名: 类型;
+    
+    constructor(参数: 类型){
+        this.属性名 = 参数;
+    }
+    方法名(){
+        ....
+    }
+}
+// 使用
+new 类名
+// 静态 - static关键字
+static age: number = 18;
+static sayHello(){
+    console.log('Hello 大家好！');
+}
+// 只读 - readonly关键字
+readonly age: number = 18;
+static readonly sayHello(){
+    console.log('Hello 大家好！');
+}
+```
+
+### 构造函数-constructor
+
+构造函数在对象创建时调用，只能创建一个构造函数
+
+```ts
+class Dog {
+    name: string;
+    age: number;
+
+    // constructor 被称为构造函数
+    // 构造函数会在对象创建时调用
+    // TS中仅能创建一个构造函数！
+    constructor(name: string, age: number) {
+        // 在实例方法中，this就表示当前当前的实例
+        // 在构造函数中的当前对象就是新建的那个对象
+        // 可以通过this向新建的对象中添加属性
+        this.name = name;
+        this.age = age;
+    }
+
+    bark() {
+        // alert('汪汪汪！');
+        // 在方法中可以通过this来表示当前调用方法的对象
+        console.log(this.name);
+    }
+}
+
+const dog = new Dog('小黑', 4);
+const dog2 = new Dog('小白', 2);
+
+console.log(dog);
+console.log(dog2);
+
+dog2.bark();
+```
+
+### 继承-extends
+
+```ts
+(function () {
+    // 定义一个Animal类
+    class Animal {
+        name: string;
+        age: number;
+
+        constructor(name: string, age: number) {
+            this.name = name;
+            this.age = age;
+        }
+
+        sayHello() {
+            console.log('动物在叫~');
+        }
+    }
+
+    /*
+    * Dog extends Animal
+    *   - 此时，Animal被称为父类，Dog被称为子类
+    *   - 使用继承后，子类将会拥有父类所有的方法和属性
+    *   - 通过继承可以将多个类中共有的代码写在一个父类中，
+    *       这样只需要写一次即可让所有的子类都同时拥有父类中的属性和方法
+    *       如果希望在子类中添加一些父类中没有的属性或方法直接加就行
+    *   - 如果在子类中添加了和父类相同的方法，则子类方法会覆盖掉父类的方法
+    *       这种子类覆盖掉父类方法的形式，我们称为方法重写
+    *
+    */
+    // 定义一个表示狗的类
+    // 使Dog类继承Animal类
+    class Dog extends Animal {
+        run() {
+            console.log(`${this.name}在跑~~~`);
+        }
+
+        sayHello() {
+            console.log('汪汪汪汪！');
+        }
+    }
+
+    // 定义一个表示猫的类
+    // 使Cat类继承Animal类
+    class Cat extends Animal {
+        sayHello() {
+            console.log('喵喵喵喵！');
+        }
+    }
+
+    const dog = new Dog('旺财', 5);
+    const cat = new Cat('咪咪', 3);
+    console.log(dog);
+    dog.sayHello();
+    dog.run();
+    console.log(cat);
+    cat.sayHello();
+})();
+```
+
 ### super关键字
 
 #### super当作函数使用
