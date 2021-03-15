@@ -547,7 +547,88 @@ let obj = {}
 Object.getPrototypeOf(obj)  === obj.__proto__ // true
 ```
 
-## 六、JS如何实现继承
+### 3.总结
+
+![prototype](/imgs/prototype.png)
+
+__proto__是每个对象都有的一个属性，而prototype是函数才会有的属性!!! 
+使用Object.getPrototypeOf()代替__proto__!!!
+
+一切对象都最终继承自Object对象，Object对象直接继承自根源对象null（Function.prototype是 Object的实例对象 ）
+一切函数对象（包括Object对象)都直接继承自Function对象：（首先 Object和 Function都是构造函数，而所有的构造函数的都是 Function的实例对象. 因此 Object是 Function的实例对象 ）
+
+## 六、JS的this指向
+
+其实JS中的this是一个非常简单的东西，只需要理解它的执行规则就OK。
+
+在这里不想像其他博客一样展示太多的代码例子弄得天花乱坠， 反而不易理解。
+
+call/apply/bind可以显式绑定, 这里就不说了。
+
+主要这些场隐式绑定的场景讨论:
+
+1. 全局上下文
+2. 直接调用函数
+3. 对象.方法的形式调用
+4. DOM事件绑定(特殊)
+5. new构造函数绑定
+6. 箭头函数
+
+### 1. 全局上下文
+
+全局上下文默认this指向window, 严格模式下指向undefined。
+
+### 2. 直接调用函数
+
+```js
+let obj = {
+  a: function() {
+    console.log(this);
+  }
+}
+let func = obj.a;
+func();
+```
+
+这种情况是直接调用。this相当于全局上下文的情况。
+
+### 3. 对象.方法的形式调用
+
+```js
+obj.a();
+```
+
+这就是`对象.方法`的情况，this指向这个对象
+
+### 4. DOM事件绑定
+
+onclick和addEventerListener中 this 默认指向绑定事件的元素。
+
+IE比较奇异，使用attachEvent，里面的this默认指向window。
+
+### 5. new+构造函数
+
+此时构造函数中的this指向实例对象。
+
+### 6. 箭头函数？
+
+箭头函数没有this, 因此也不能绑定。里面的this会指向当前最近的非箭头函数的this，找不到就是window(严格模式是undefined)。比如:
+
+```js
+let obj = {
+  a: function() {
+    let do = () => {
+      console.log(this);
+    }
+    do();
+  }
+}
+obj.a(); // 找到最近的非箭头函数a，a现在绑定着obj, 因此箭头函数中的this是obj
+```
+
+**优先级: new > call、apply、bind > 对象.方法 > 直接调用。**
+
+## 七、JS如何实现继承
 
 ### 第一种: 借助call
 
@@ -753,7 +834,7 @@ let newEnergyCar = compose(drive, music);
 
 代码干净，复用性也很好。这就是面向组合的设计方式。
 
-## 七、函数的arguments为什么不是数组？如何转化成数组？
+## 八、函数的arguments为什么不是数组？如何转化成数组？
 
 因为arguments本身并不能调用数组方法，它是一个另外一种对象类型，只不过属性从0开始排，依次为0，1，2...最后还有callee和length属性。我们也把这样的对象称为类数组。
 
@@ -808,7 +889,7 @@ sum(1, 2);//3
 
 当然，最原始的方法就是再创建一个数组，用for循环把类数组的每个属性值放在里面，过于简单，就不浪费篇幅了。
 
-## 八、forEach中return有效果吗？如何中断forEach循环？
+## 九、forEach中return有效果吗？如何中断forEach循环？
 
 在forEach中用return不会返回，函数会继续执行。
 
@@ -824,7 +905,7 @@ nums.forEach((item, index) => {
 1. 使用try监视代码块，在需要中断的地方抛出异常。
 2. 官方推荐方法（替换方法）：用every和some替代forEach函数。every在碰到return false的时候，中止循环。some在碰到return true的时候，中止循环
 
-## 九、JS判断数组中是否包含某个值
+## 十、JS判断数组中是否包含某个值
 
 ### 方法一：array.indexOf
 
@@ -871,7 +952,7 @@ console.log(result);
 
 当然，for循环当然是没有问题的，这里讨论的是数组方法，就不再展开了。
 
-## 十、JS中flat--数组扁平化
+## 十一、JS中flat--数组扁平化
 
 对于前端项目开发过程中，偶尔会出现层叠数据结构的数组，我们需要将多层级数组转化为一级数组（即提取嵌套数组元素最终合并为一个数组），使其内容合并且展开。那么该如何去实现呢？
 
@@ -940,5 +1021,13 @@ while (ary.some(Array.isArray)) {
 }
 ```
 
-## 十一、JS数组的高阶函数--基础
+## 十二、JS数组的高阶函数--基础
+
+### 1.什么是高阶函数
+
+`一个函数`就可以接收另一个函数作为参数或者返回值为一个函数，`这种函数`就称之为高阶函数。
+
+### 2.数组中的高阶函数
+
+#### 1.map
 
