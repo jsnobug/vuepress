@@ -122,3 +122,40 @@ function step(timestamp) {
 window.requestAnimationFrame(step);
 ```
 
+```js
+    let left = 0
+    const div = document.getElementById('div')
+    console.dir(div)
+    let flag = true
+    let lastTime = Date.now()
+    let nowTime = 0
+    let a
+    const diffTime = 1000
+    function fun () {
+      if (flag) {
+        if (left <= 0) {
+          flag = false
+        }
+        div.style.left = `${left -= 20}px`
+      } else {
+        if (left >= 200) {
+          flag = true
+        }
+        div.style.left = `${left += 20}px`
+      }
+    }
+    (function animaloop () {
+      nowTime = Date.now()
+      // 定时
+      if (nowTime - lastTime > diffTime) {
+        lastTime = nowTime
+        fun()
+      }
+      a = requestAnimationFrame(animaloop)
+    })()
+    div.addEventListener('click', () => {
+      // 清楚
+      cancelAnimationFrame(a)
+    })
+```
+
