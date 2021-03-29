@@ -1,5 +1,30 @@
 # ES6及以上特性
 
+ECMA(European Computer Manufacturers Association)中文名称为欧洲计算机制造商协会，这个组织的目标是评估、开发和认可电信和计算机标准。1994 年后该组织改名为 Ecma 国际;
+
+ECMAScript 是由 Ecma 国际通过 ECMA-262 标准化的脚本程序设计语言;
+
+| **版本  ** | **时间** | **概述**                                                     |
+| ---------- | -------- | ------------------------------------------------------------ |
+| 第1版      | 1997年   | 制定了语言的基本语法                                         |
+| 第2版      | 1998年   | 较小改动                                                     |
+| 第3版      | 1999年   | 引入正则、异常处理、格式化输出等。IE 开始支持                |
+| 第4版      | 2007年   | 过于激进，未发布                                             |
+| 第5版      | 2014年   | 引入严格模式、JSON，扩展对象、数组、原型、字符串、日期方法   |
+| 第6版      | 2015年   | 模块化、面向对象语法、Promise、箭头函数、let、const、数组解构赋值等 |
+| 第7版      | 2016年   | 幂运算符、数组扩展、Async/await 关键字                       |
+| 第8版      | 2017年   | Async/await、字符串扩展                                      |
+| 第9版      | 2018年   | 对象解构赋值、正则扩展                                       |
+| 第10版     | 2019年   | 扩展对象、数组方法                                           |
+| 第11版     | 2020年   | 链式操作、动态导入等                                         |
+| ES.next    | 2020+    | 动态指向下一个版本                                           |
+
+**注:从** **ES6** **开始，每年发布一个版本，版本号比年份最后一位大** **1**
+
+查看网址:http://kangax.github.io/compat-table/es6
+
+
+
 **Set是一种叫做集合的数据结构，Map是一种叫做字典的数据结构**
 
 - 集合
@@ -15,7 +40,8 @@
 - 共同点：集合、字典都可以存储不重复的值
 - 不同点：集合是以[值，值]的形式存储元素，字典是以[键，值]的形式存储
 
-## Set数据结构
+
+## 一、Set数据结构
 
 ### 基本介绍
 
@@ -64,7 +90,7 @@ console.log(mySet); // {1, 5, "some text"}
 
 #### clear()
 
- 用来清空一个 `Set` 对象中的所有元素。返回值：undefined。
+用来清空一个 `Set` 对象中的所有元素。返回值：undefined。
 
 ```js
 mySet.clear()
@@ -116,7 +142,7 @@ new Set(["foo", "bar", undefined]).forEach(logSetElements,a);
 
 但是由于集合对象中没有索引(keys)，所以前两个参数都是Set中元素的值(values)，之所以这样设计回调函数是为了和Map 以及Array的 forEach 函数用法保持一致。如果提供了一个 thisArg 参数给 forEach 函数，则参数将会作为回调函数中的 this值。
 
-#### **has()** 
+#### **has()**
 
 返回一个布尔值来指示对应的值value是否存在Set对象中。
 
@@ -136,7 +162,7 @@ set1.has({'key1': 1}); // 会返回 false，因为其是另一个对象的引用
 set1.add({'key1': 1}); // 现在 set1 中有2条（不同引用的）对象了
 ```
 
-#### **entries()** 
+#### **entries()**
 
 返回一个新的迭代器对象 ，这个对象的元素是类似 [value, value] 形式的数组，value 是集合对象中的每个元素，迭代器对象元素的顺序即集合对象中元素插入的顺序。由于集合对象不像 Map 对象那样拥有 key，然而，为了与 Map 对象的 API 形式保持一致，故使得每一个 entry 的 key 和 value 都拥有相同的值，因而最终返回一个 [value, value] 形式的数组。
 返回值：一个新的包含 [value, value] 形式的数组迭代器对象，value 是给定集合中的每个元素，迭代器 对象元素的顺序即集合对象中元素插入的顺序。
@@ -156,7 +182,7 @@ console.log(setIter.next().value); // ["baz", "baz"]
 
 #### values()
 
- 返回一个 `**Iterator**` 对象，该对象按照原Set 对象元素的插入顺序返回其所有元素。
+返回一个 `**Iterator**` 对象，该对象按照原Set 对象元素的插入顺序返回其所有元素。
 
 ```js
 var mySet = new Set();
@@ -275,7 +301,7 @@ let arr = [...b].filter(x => [...a].every(y => y.id !== x.id));
 console.log('arr',arr)
 ```
 
-## Map数据结构
+## 二、Map数据结构
 
 ### 基本介绍
 
@@ -388,8 +414,7 @@ console.log(merged.get(1)); // eins
 console.log(merged.get(2)); // dos
 console.log(merged.get(3)); // three
 ```
-
-## 一、var、let和const
+## 三、var、let和const
 
 ### 1 var关键词
 
@@ -531,7 +556,7 @@ if (MY_FAV === 7) {
 console.log('my favorite number is ' + MY_FAV);
 ```
 
-## 二、解构赋值
+## 四、解构赋值
 
 **解构赋值**语法是一种 Javascript 表达式。通过**解构赋值,** 可以将属性/值从对象/数组中取出,赋值给其他变量。
 
@@ -761,7 +786,7 @@ console.log("userId: " + userId(user)); // "userId: 42"
 whois(user); // "jdoe is John"
 ```
 
-## 三、模板字符串
+## 五、模板字符串
 
 模板字面量 是允许嵌入表达式的字符串字面量。你可以使用多行字符串和字符串插值功能。
 
@@ -856,7 +881,7 @@ str.split('').join(',');
 // "H,i,\,n,5,!"
 ```
 
-## 四、箭头函数
+## 六、箭头函数
 
 **箭头函数表达式**的语法比函数表达式更简洁，并且没有自己的`this`，`arguments`，`super`或`new.target`。箭头函数表达式更适用于那些本来需要匿名函数的地方，并且它不能用作构造函数。
 
@@ -981,7 +1006,7 @@ obj.b; // undefined   "undefined"   Window {postMessage: ƒ, blur: ƒ, focus: ƒ
 
 **不能使用new操作符，没有prototype属性，不能使用yield关键字**
 
-## 五、函数默认参数值
+## 七、函数默认参数值
 
 ```js
 function multiply(a, b = 1) {
@@ -1055,7 +1080,7 @@ function f([x, y] = [1, 2], {z: z} = {z: 3}) {
 f(); // 6
 ```
 
-## 六、剩余参数
+## 八、剩余参数
 
 **剩余参数**语法允许我们将一个不定数量的参数表示为一个数组。
 
@@ -1122,7 +1147,7 @@ f(1, 2, 3)    // 6
 f(1, 2, 3, 4) // 6 (the fourth parameter is not destructured)
 ```
 
-## 七、扩展运算符（展开算法）
+## 九、扩展运算符（展开算法）
 
 **展开语法(Spread syntax),** 可以在函数调用/数组构造时, 将数组表达式或者string在语法层面展开；还可以在构造字面量对象时, 将对象表达式按key-value的方式展开。(**译者注**: 字面量一般指 `[1, 2, 3]` 或者 `{name: "mdn"}` 这种简洁的构造方式)
 
@@ -1179,7 +1204,7 @@ var clonedObj = { ...obj1 };// 克隆后的对象: { foo: "bar", x: 42 }
 var mergedObj = { ...obj1, ...obj2 };// 合并后的对象: { foo: "baz", x: 42, y: 13 }
 ```
 
-## 八、Class
+## 十、Class
 
 默认严格模式
 
@@ -1451,7 +1476,7 @@ B.x = 3;
 B.m() // 3
 ```
 
-## 九、对象简化写法
+## 十一、对象简化写法
 
 - 同名的属性可以省略不写
 - 对象中的方法中的 : function 可以省略不写
@@ -1472,7 +1497,7 @@ console.log('ES6', studentES6);
 console.log('ES6', studentES6.getName());
 ```
 
-## 十、Symbol 基本数据类型
+## 十二、Symbol 基本数据类型
 
 是一种新的数据类型，表示独一无二的值，类似字符串。
 
@@ -1516,7 +1541,7 @@ console.log(Reflect.ownKeys(obj)) // [Symbol(s)]
 
 ### Symbol内置属性方法
 
-## 十一、迭代器
+## 十三、迭代器
 
 **Symbol.iterator** 为每一个对象定义了默认的迭代器。该迭代器可以被 `for...of` 循环使用。
 
@@ -1584,7 +1609,7 @@ for (let value of banji) {
 // banji.stus.forEach()
 ```
 
-## 十二、生成器
+## 十四、生成器
 
 - 生成器其实是一个特殊函数
 - 解决异步编程
@@ -1669,6 +1694,838 @@ let iterator = gen()
 iterator.next()
 ```
 
-## 十三、Promise
+## 十五、Promise
 
-详细见Promise文章
+Promise 是 ES6 引入的**异步编程的新解决方案**。语法上 Promise 是一个**构造函数**，用来封装异步操作 并可以获取其成功或失败的结果;
+
+1. Promise 构造函数: Promise (excutor) {}; 
+2. Promise.prototype.then 方法;
+3. Promise.prototype.catch 方法;
+
+## 十六、class类
+
+### 概述
+
+ES6 提供了更接近传统语言的写法，引入了 Class(类)这个概念，作为对象的模板。通过 class 关键 字，可以定义类。基本上，ES6 的 class 可以看作只是一个语法糖，它的绝大部分功能，ES5 都可以做 到，新的 class 写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已;
+
+### 知识点
+
+1. class 声明类;
+
+   ```js
+   // 手机 ES5写法
+   // function Phone(brand,price){
+   // 	this.brand = brand;
+   // 	this.price = price;
+   // }
+   // // 添加方法
+   // Phone.prototype.call = function(){ // console.log("我可以打电话!");
+   // }
+   // // 实例化对象
+   // let HuaWei = new Phone("华为",5999); // HuaWei.call();
+   // console.log(HuaWei);
+   
+   // ES6写法 
+   class Phone{
+   // 构造方法，名字是固定的 
+     constructor(brand,price) {
+       this.brand = brand;
+       this.price = price;
+     }
+   // 打电话，方法必须使用该方式写 
+     call(){
+   		console.log("我可以打电话!"); 
+     }
+   }
+   let HuaWei = new Phone("华为",5999);
+   ```
+
+2.  constructor 定义构造函数初始化; 
+
+3. extends 继承父类;
+
+   ```js
+   // ES6class类继承 
+   class Phone{
+     constructor(brand,price) {
+       this.brand = brand;          
+       this.price = price;
+   	} 
+     call(){
+   		console.log("我可以打电话!"); 
+     }    
+   }
+               
+   class SmartPhone extends Phone{
+   // 构造函数 
+     constructor(brand,price,color,size) {
+   		super(brand,price); 
+       // 调用父类构造函数 
+       this.color = color;
+   		this.size = size;
+   	}
+   	photo(){ 
+       console.log("我可以拍照!");
+   	} 	
+     game(){
+   		console.log("我可以玩游戏!");
+     }
+   }
+   const chuizi = new SmartPhone("小米",1999,"黑色","5.15inch"); console.log(chuizi);
+   chuizi.call();
+   chuizi.photo();
+   chuizi.game();
+   ```
+
+4. super 调用父级构造方法;
+
+5. static 定义静态方法和属性;
+
+6. 父类方法可以重写;
+
+   ```js
+   // ES6class类继承 
+   class Phone{            
+     constructor(brand,price) {        
+       this.brand = brand;           
+       this.price = price;
+     } 
+     call(){
+       console.log("我可以打电话!"); 
+     }
+   }   
+   class SmartPhone extends Phone{
+   	// 构造函数 
+     constructor(brand,price,color,size) {
+       super(brand,price); 
+       // 调用父类构造函数 this.color = color;
+       this.size = size;
+     }
+     // 子类对父类方法重写
+     // 直接写，直接覆盖
+     // 注意:子类无法调用父类同名方法 
+     call(){
+       console.log("我可以进行视频通话!"); 
+     }
+   	photo(){ 
+       console.log("我可以拍照!");
+     } 
+     game(){
+       console.log("我可以玩游戏!"); }
+   }
+   const chuizi = new SmartPhone("小米",1999,"黑色","5.15inch"); console.log(chuizi);
+   chuizi.call();
+   chuizi.photo();
+   chuizi.game();
+   ```
+
+7. class中的getter和setter设置
+
+   ```js
+   // class中的getter和setter设置 
+   class Phone{
+   	get price(){ 
+       console.log("价格属性被读取了!"); // 返回值
+       return 123;
+   	}
+   	set price(value){ 
+       console.log("价格属性被修改了!");
+   	} 
+   }
+   // 实例化对象
+   let s = new Phone(); 
+   console.log(s.price); // 返回值 getter
+   s.price = 2999; // setter
+   ```
+
+## 十七、数值扩展
+
+### Number.EPSILON
+
+Number.EPSILON 是 JavaScript 表示的最小精度;
+ EPSILON 属性的值接近于 2.2204460492503130808472633361816E-16;
+
+### 二进制和八进制
+
+ES6 提供了二进制和八进制数值的新的写法，分别用前缀 0b 和 0o 表示; 
+
+### Number.isFinite()与 Number.isNaN()
+
+Number.isFinite() 用来检查一个数值是否为有限的; Number.isNaN() 用来检查一个值是否为 NaN;
+
+### Number.parseInt() **与** Number.parseFloat()
+
+ES6 将全局方法 parseInt 和 parseFloat，移植到 Number 对象上面，使用不变
+
+### Math.trunc
+
+用于去除一个数的小数部分，返回整数部分;
+
+### Number.isInteger
+
+Number.isInteger() 用来判断一个数值是否为整数;
+
+```js
+// 数值扩展
+// 0. Number.EPSILON 是 JavaScript 表示的最小精度
+// EPSILON 属性的值接近于 2.2204460492503130808472633361816E-16 
+// function equal(a, b){
+// 		return Math.abs(a-b) < Number.EPSILON;
+// }
+// 箭头函数简化写法
+equal = (a, b) => Math.abs(a-b) < Number.EPSILON; console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 === 0.3); // false 
+console.log(equal(0.1 + 0.2, 0.3)); // true
+// 1. 二进制和八进制 console.log("1、二进制和八进制"); let b = 0b1010;
+let o = 0o777;
+let d = 100;
+let x = 0xff;
+console.log(x);
+// 2. Number.isFinite
+检测一个数值是否为有限数
+console.log("2、Number.isFinite 检测一个数值是否为有限数"); console.log(Number.isFinite(100)); 
+console.log(Number.isFinite(100/0)); 
+console.log(Number.isFinite(Infinity));
+// 3. Number.isNaN 检测一个数值是否为 NaN 
+console.log("3. Number.isNaN 检测一个数值是否为 NaN"); 
+console.log(Number.isNaN(123));
+// 4. Number.parseInt Number.parseFloat字符串转整数 
+console.log("4. Number.parseInt Number.parseFloat字符串转整数"); console.log(Number.parseInt('5211314love')); 
+console.log(Number.parseFloat('3.1415926神奇'));
+// 5. Number.isInteger 判断一个数是否为整数 
+console.log("5. Number.isInteger 判断一个数是否为整数"); 
+console.log(Number.isInteger(5)); 
+console.log(Number.isInteger(2.5));
+// 6. Math.trunc 将数字的小数部分抹掉 
+console.log("6. Math.trunc 将数字的小数部分抹掉 "); 
+console.log(Math.trunc(3.5));
+// 7. Math.sign 判断一个数到底为正数 负数 还是零 
+console.log("7. Math.sign 判断一个数到底为正数 负数 还是零"); 
+console.log(Math.sign(100));
+console.log(Math.sign(0)); 
+console.log(Math.sign(-20000));
+```
+
+## 十八、对象扩展
+
+ES6 新增了一些 Object 对象的方法:
+
+1. Object.is 比较两个值是否严格相等，与『===』行为基本一致(+0 与 NaN); 
+2. Object.assign 对象的合并，将源对象的所有可枚举属性，复制到目标对象;
+3. **proto**、setPrototypeOf、 setPrototypeOf 可以直接设置对象的原型;
+
+```js
+// 对象扩展
+// 1. Object.is 比较两个值是否严格相等，与『===』行为基本一致(+0 与 NaN); console.log(Object.is(120,120)); // ===
+// 注意下面的区别
+console.log(Object.is(NaN,NaN));
+console.log(NaN === NaN);
+// NaN与任何数值做===比较都是false，跟他自己也如此!
+// 2. Object.assign 对象的合并，将源对象的所有可枚举属性，复制到目标对象; 
+const config1 = {
+  host : "localhost", port : 3306,
+  name : "root",
+  pass : "root",
+  test : "test" // 唯一存在
+}
+const config2 = {  
+  host : "http://zibo.com",
+  port : 300300600,
+  name : "root4444",
+  pass : "root4444",
+  test2 : "test2"
+}
+// 如果前边有后边没有会添加，如果前后都有，后面的会覆盖前面的 
+console.log(Object.assign(config1,config2));
+// 3. __proto__、setPrototypeOf、 getPrototypeOf 可以直接设置对象的原型; 
+const school = {
+	name : "尚硅谷" }
+	const cities = {
+	xiaoqu : ['北京','上海','深圳']
+}
+// 并不建议这么做 
+Object.setPrototypeOf(school,cities); 
+console.log(Object.getPrototypeOf(school)); 
+console.log(school);
+```
+
+## 十九、模块化
+
+### 概述
+
+模块化是指将一个大的程序文件，拆分成许多小的文件，然后将小文件组合起来;
+
+模块化的好处
+
+### 模块化的优势有以下几点:
+
+1. 防止命名冲突;
+2. 代码复用;
+3. 高维护性;
+
+模块化规范产品
+
+### ES6 之前的模块化规范有:
+
+1. CommonJS => NodeJS、Browserify; 
+2. AMD => requireJS;
+3. CMD => seaJS;
+
+### **ES6** 模块化语法
+
+模块功能主要由两个命令构成:export 和 import;
+
+- export 命令用于规定模块的对外接口(导出模块);
+-  import 命令用于输入其他模块提供的功能(导入模块);
+
+#### 暴露数据语法汇
+
+```js
+// 分别暴露(导出)
+export let school = "321";
+export function teach(){ 
+	console.log("412412!");
+}
+
+// 统一暴露(导出)
+let school = "4214";
+function findJob(){ 
+  console.log("14"
+}
+export {school,findJob}
+
+// 默认暴露(导出) 
+export default{
+	school : "fadsfas", 
+  change : function(){
+  	console.log("fasdfdas!"); 
+  }
+}
+```
+
+#### 导入模块语法汇总
+
+```js
+// 1.通用方式
+// 引入m.js模块内容
+import * as m from "./js/m.js";
+console.log(m);
+console.log(m.school);
+m.teach();
+// 引入n.js模块内容
+import * as n from "./js/n.js";
+console.log(n);
+console.log(n.school);
+n.findJob();
+// 引入o.js模块内容
+import * as o from "./js/o.js";
+console.log(o);
+// 2.注意这里调用方法的时候需要加上default 
+console.log(o.default.school);
+o.default.change();
+// 3.解构赋值形式
+import {school,teach} from "./js/m.js";
+// 重名的可以使用别名
+import {school as xuexiao,findJob} from "./js/n.js"; 
+// 4.导入默认导出的模块，必须使用别名
+import {default as one} from "./js/o.js";
+// 直接可以使用
+console.log(school);
+teach();
+console.log(xuexiao);
+console.log(one);
+console.log(one.school);
+one.change();
+// 5.简便形式，只支持默认导出 
+import oh from "./js/o.js"; 
+console.log(oh); 
+console.log(oh.school); 
+oh.change();
+```
+
+## 二十、Babel对ES6模块化代码转换
+
+### Babel概述:
+
+Babel 是一个 JavaScript 编译器;
+
+Babel 能够将新的ES规范语法转换成ES5的语法; 
+
+因为不是所有的浏览器都支持最新的ES规范，所以，一般项目中都需要使用Babel进行转换; 
+
+步骤:使用Babel转换JS代码——打包成一个文件——使用时引入即可;
+
+### 步骤
+
+第一步:安装工具babel-cli(命令行工具) babel-preset-env(ES转换工具) browserify(打包工具， 项目中使用的是webpack);
+
+第二步:初始化项目
+
+npm init -y
+
+第三步:安装
+
+```js
+npm i babel-cli babel-preset-env browserify
+```
+
+第四步:使用babel转换
+
+```js
+npx babel js(js目录) -d dist/js(转化后的js目录) --presets=babel-preset-env
+```
+
+第五步:打包
+
+```js
+npx browserify dist/js/app.js -o dist/bundle.js
+```
+
+第六步:在使用时引入bundle.js
+
+```js
+<script src="./js/bundle.js" type="module"></script>
+```
+
+## 二十一、ES7新特性
+
+### 1、Array.prototype.includes
+
+Includes 方法用来检测数组中是否包含某个元素，返回布尔类型值; 判断数组中是否包含某元素，语法:arr.includes(元素值);
+
+```js
+ let arr = [1,2,3,4,5];
+ console.log(arr.includes(1));
+```
+
+### 2、指数操作符
+
+在 ES7 中引入指数运算符「**」，用来实现幂运算，功能与 Math.pow 结果相同; 幂运算的简化写法;
+
+```js
+// 指数操作符 
+console.log(Math.pow(2,10))
+console.log(2**10)
+```
+
+## 二十二、ES8新特性
+
+### 1、async和await
+
+async 和 await 两种语法结合可以让异步代码看起来像同步代码一样; 简化异步函数的写法;
+
+#### async 函数:
+
+1. async 函数的返回值为 promise 对象;
+2. promise 对象的结果由 async 函数执行的返回值决定;
+
+```js
+// async函数:异步函数 
+async function fn(){
+  // return 123; // 返回普通数据
+  // 若报错，则返回的Promise对象也是错误的
+  // throw new Error("出错啦!");
+  // 若返回的是Promise对象，那么返回的结果就是Promise对象的结果 
+  return new Promise((resolve,reject)=>{
+    // resolve("成功啦!");
+    reject("失败啦!"); 
+  })
+}
+const result = fn();
+// console.log(result); // 返回的结果是一个Promise对象 // 调用then方法
+result.then(value => {
+  console.log(value);
+},reason => {
+  console.warn(reason);
+});
+```
+
+#### await 表达式
+
+1. await 必须写在 async 函数中;
+2. await 右侧的表达式一般为 promise 对象;
+3. await 返回的是 promise 成功的值;
+4. await 的 promise 失败了, 就会抛出异常, 需要通过 try...catch 捕获处理;
+
+```js
+// async函数 + await表达式:异步函数
+// 创建Prmise对象
+const p = new Promise((resolve,reject)=>{
+  resolve("成功啦!"); 
+})
+async function fn(){
+// await 返回的是 promise 成功的值 
+  let result = await p;
+  console.log(result); // 成功啦!
+}   
+fn();
+```
+
+### 2、对象方法扩展 Object.values、Object.entries和Object.getOwnPropertyDescriptors
+
+1. Object.values()方法:返回一个给定对象的所有可枚举属性值的数组;
+2. Object.entries()方法:返回一个给定对象自身可遍历属性 [key,value] 的数组;
+3. Object.getOwnPropertyDescriptors()该方法:返回指定对象所有自身属性的描述对象;
+
+```js
+    // 对象方法扩展
+    let school = {
+      name : "訾博",
+      age : 24,
+      sex : "男"
+    }
+    // 获取对象所有的键
+    console.log(Object.keys(school));
+    // 获取对象所有的值
+    console.log(Object.values(school));
+    // 获取对象的entries
+    console.log(Object.entries(school));
+    // 创建map
+    const map = new Map(Object.entries(school));
+    console.log(map);
+    console.log(map.get("name"));
+    console.log(Object.getOwnPropertyDescriptors(school));
+    // 参考内容:
+    const obj = Object.create(null, {
+      name: {
+        // 设置值
+        value: "訾博",
+        // 属性特性
+        writable: true,
+        configuration: true,
+        enumerable: true
+      }
+    })
+```
+
+## 二十三、ES9特性
+
+### 1、Rest参数与spread 扩展运算符
+
+Rest 参数与 spread 扩展运算符在 ES6 中已经引入，不过 ES6 中只针对于数组，在 ES9 中为对象提供了 像数组一样的 rest 参数和扩展运算符;
+
+### 2、正则扩展:命名捕获分组
+
+ES9 允许命名捕获组使用符号『?』,这样获取捕获结果可读性更强;
+
+```js
+// 正则扩展:命名捕获分组
+// 声明一个字符串
+let str = '<a href="http://www.baidu.com">訾博</a>'; // 需求:提取url和标签内文本
+// 之前的写法
+const reg = /<a href="(.*)">(.*)<\/a>/;
+// 执行
+const result = reg.exec(str);
+console.log(result);
+// 结果是一个数组，第一个元素是所匹配的所有字符串
+// 第二个元素是第一个(.*)匹配到的字符串
+// 第三个元素是第二个(.*)匹配到的字符串
+// 我们将此称之为捕获
+console.log(result[1]);
+console.log(result[2]);
+// 命名捕获分组
+const reg1 = /<a href="(?<url>.*)">(?<text>.*)<\/a>/; 
+const result1 = reg1.exec(str);
+console.log(result1);
+// 这里的结果多了一个groups
+// groups:
+// text:"訾博"
+// url:"http://www.baidu.com" 
+console.log(result1.groups.url); 
+console.log(result1.groups.text);
+```
+
+### 3、正则扩展:反向断言
+
+ES9 支持反向断言，通过对匹配结果前面的内容进行判断，对匹配进行筛选
+
+```js
+// 正则扩展:反向断言
+// 字符串
+let str = "JS5201314你知道么555啦啦啦";
+// 需求:我们只想匹配到555
+// 正向断言
+const reg = /\d+(?=啦)/; // 前面是数字后面是啦 
+const result = reg.exec(str); 
+console.log(result);
+// 反向断言
+const reg1 = /(?<=么)\d+/; // 后面是数字前面是么 
+const result1 = reg.exec(str); 
+console.log(result1);
+```
+
+### 4、正则扩展:dotAll模式
+
+```js
+// 正则扩展:dotAll 模式
+// dot就是. 元字符，表示除换行符之外的任意单个字符 
+let str = `
+  <ul>
+  <li>
+  <a>肖生克的救赎</a> <p>上映日期: 1994-09-10</p>
+  </li> <li>
+  <a>阿甘正传</a>
+  <p>上映日期: 1994-07-06</p> </li>
+  </ul> 
+`
+// 需求:我们想要将其中的电影名称和对应上映时间提取出来，存到对象
+// 之前的写法
+// const reg = /<li>\s+<a>(.*?)<\/a>\s+<p>(.*?)<\/p>/;
+// dotAll 模式
+const reg = /<li>.*?<a>(.*?)<\/a>.*?<p>(.*?)<\/p>/gs; 
+// const result = reg.exec(str);
+// console.log(result);
+let result;
+let data = [];
+while(result = reg.exec(str)){
+  console.log(result);
+  data.push({title:result[1],time:result[2]});  
+}  
+console.log(data);
+```
+
+## 二十四、ES10新特性
+
+### 1、Object.fromEntries
+
+```js
+// Object.fromEntries:将二维数组或者map转换成对象 
+// 之前学的Object.entries是将对象转换成二维数组
+// 此方法接收的是一个二维数组，或者是一个map集合
+// 二维数组
+const result = Object.fromEntries([ 
+  ["name","訾博"],
+  ["age",24]
+]);
+console.log(result);
+const m = new Map(); 
+m.set("name","訾博");
+m.set("age",24);
+const result1 = Object.fromEntries(m);
+console.log(result1);
+```
+
+### 2、trimStart 和trimEnd
+
+```js
+// trimStart 和 trimEnd
+let str = " zibo "; 
+console.log(str.trimLeft());
+console.log(str.trimRight()); 
+console.log(str.trimStart()); 
+console.log(str.trimEnd());
+```
+
+### 3、Array.prototype.flat与 flatMap
+
+将多维数组转换成低维数组;
+
+```js
+// Array.prototype.flat 与 flatMap 
+// flat
+// 将多维数组转换成低维数组
+// 将二维数组转换成一维数组
+const arr = [1,2,3,[4,5],6,7]; 
+console.log(arr.flat());
+// 将三维数组转换成二维数组
+const arr2 = [1,2,3,[4,5,[6,7]],8,9]; 
+console.log(arr2.flat());
+// 将三维数组转换成一维数组 
+console.log(arr2.flat(2));
+// flatMap
+const arr3 = [1,2,3,4,5];
+const result0 = arr3.map(item => item * 10);
+console.log(result0);
+const result = arr3.map(item => [item * 10]);
+console.log(result);
+const result1 = arr3.flatMap(item => [item * 10]);
+console.log(result1);
+```
+
+### 4、Symbol.prototype.description
+
+```js
+// Symbol.prototype.description 
+// 获取Symbol的描述字符串
+// 创建Symbol
+let s = Symbol("訾博"); 
+console.log(s.description)
+```
+
+## 二十五、ES11 新特性
+
+### 1、String.prototype.matchAll
+
+用来得到正则批量匹配的结果;
+
+```js
+// String.prototype.matchAll 
+// 用来得到正则批量匹配的结果 
+let str = `
+  <ul>
+    <li>
+      <a>肖生克的救赎</a> 
+        <p>上映日期: 1994-09-10</p>
+        </li> <li>
+      <a>阿甘正传</a>
+      <p>上映日期: 1994-07-06</p> 
+		</li>
+  </ul>
+`;
+// 正则
+const reg = /<li>.*?<a>(.*?)<\/a>.*?<p>(.*?)<\/p>/sg; 
+const result = str.matchAll(reg);
+// 返回的是可迭代对象，可用扩展运算符展开 
+// console.log(...result);
+// 使用for...of...遍历
+for(let v of result){
+  console.log(v);
+}
+```
+
+### 2、类的私有属性
+
+私有属性外部不可访问直接;
+
+```js
+// 类的私有属性 
+class Person{
+  // 公有属性
+  name;
+  // 私有属性
+  #age;
+  #weight;
+  // 构造方法
+  constructor(name, age, weight){     
+    this.name = name;
+    this.#age = age;
+    this.#weight = weight;
+  } 
+	intro(){    
+    console.log(this.name);
+    console.log(this.#age);
+    console.log(this.#weight);       
+  } 
+}
+// 实例化
+const girl = new Person("小兰",18,"90kg"); 
+console.log(girl);
+// 公有属性的访问
+console.log(girl.name);
+// 私有属性的访问
+console.log(girl.age); // undefined
+// 报错Private field '#age' must be declared in an enclosing class 
+// console.log(girl.#age);
+girl.intro();
+```
+
+### 3、Promise.allSettled
+
+获取多个promise执行的结果集;
+
+```js
+// Promise.allSettled
+// 获取多个promise执行的结果集
+// 声明两个promise对象
+const p1 = new Promise((resolve,reject)=>{
+  setTimeout(()=>{ 
+    resolve("商品数据——1")
+  },1000)
+})
+const p2 = new Promise((resolve,reject)=>{
+  setTimeout(()=>{
+    reject("失败啦")
+  },1000)
+})
+// 调用Promise.allSettled方法
+const result = Promise.allSettled([p1,p2]); 
+console.log(result);
+const result1 = Promise.all([p1,p2]); // 注意区别 
+console.log(result1);
+```
+
+### 4、可选链操作符
+
+如果存在则往下走，省略对对象是否传入的层层判断;
+
+```js
+  // 可选链操作符
+  // ?.
+  function main(config){
+    // 传统写法
+    // const dbHost = config && config.db && config.db.host; 
+    // 可选链操作符写法
+    const dbHost = config?.db?.host;
+    console.log(dbHost);
+  } 
+	main({        
+    db:{        
+      host:"192.168.1.100",
+      username:"root"
+		}, 
+    cache:{
+      host:"192.168.1.200",
+      username:"admin"
+    }
+	})
+```
+
+### 5、动态import导入
+
+动态导入模块，什么时候使用时候导入;
+
+Hello.js
+
+```js
+export function hello(){
+    alert('Hello');
+}
+```
+
+app.js:
+
+```js
+// 传统静态导入 
+// import * as m1 from "./hello.js"; 
+
+// 获取元素
+const btn = document.getElementById('btn');
+btn.onclick = function(){
+  	// 动态
+    import('./hello.js').then(module => {
+        module.hello();
+    });
+}
+```
+
+### 6、BigInt
+
+更大的整数;
+
+```js
+// BigInt
+// 大整型
+let n = 100n; 
+console.log(n,typeof(n));
+// 函数:普通整型转大整型 
+let m = 123; 
+console.log(BigInt(m));
+// 用于更大数值的运算
+let max = Number.MAX_SAFE_INTEGER; 
+console.log(max); 
+console.log(max+1); 
+console.log(max+2); // 出错了
+            
+console.log(BigInt(max));
+console.log(BigInt(max)+BigInt(1));
+console.log(BigInt(max)+BigInt(2));
+```
+
+### 7、globalThis对象
+
+始终指向全局对象window;
+
+```js
+// globalThis 对象 : 始终指向全局对象window
+console.log(globalThis);
+```
