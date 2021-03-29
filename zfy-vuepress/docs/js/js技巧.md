@@ -538,3 +538,331 @@ function base64ToBlob(base64){
 }
 ```
 
+## 8.  JS如何判断一个元素是否在可视区域中
+
+### 用途
+
+在日常开发中，我们经常需要判断目标元素是否在视窗之内或者和视窗的距离小于一个值（例如 100 px），从而实现一些常用的功能，例如：
+
+- 图片的懒加载
+- 列表的无限滚动
+- 计算广告元素的曝光情况
+- 可点击链接的预加载
+
+### 实现方式
+
+判断一个元素是否在可视区域，我们常用的有三种办法：
+
+- offsetTop、scrollTop
+- getBoundingClientRect
+- Intersection Observer
+
+![top](/imgs/top.webp)
+
+#### 第一种 offsetTop/scrollTop
+
+下面再来了解下`clientWidth`、`clientHeight`：
+
+- `clientWidth`：元素内容区宽度加上左右内边距宽度，即`clientWidth = content + padding`
+- `clientHeight`：元素内容区高度加上上下内边距高度，即`clientHeight = content + padding`
+
+这里可以看到`client`元素都不包括外边距
+
+最后，关于`scroll`系列的属性如下：
+
+- `scrollWidth` 和 `scrollHeight` 主要用于确定元素内容的实际大小
+
+- `scrollLeft` 和 `scrollTop` 属性既可以确定元素当前滚动的状态，也可以设置元素的滚动位置
+
+- 
+
+- - 垂直滚动 `scrollTop > 0`
+  - 水平滚动 `scrollLeft > 0`
+
+- 将元素的 `scrollLeft` 和 `scrollTop` 设置为 0，可以重置元素的滚动位置
+
+##### 注意
+
+- 上述属性都是只读的，每次访问都要重新开始
+
+下面再看看如何实现判断：
+
+```
+el.offsetTop - document.documentElement.scrollTop <= viewPortHeight
+```
+
+```js
+function isInViewPortOfOne (el) {
+    // viewPortHeight 兼容所有浏览器写法
+    const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 父级可视高度
+    const offsetTop = el.offsetTop // 该元素距离父级的高度，固定
+    const scrollTop = document.documentElement.scrollTop // 父元素滚动的距离
+    const top = offsetTop - scrollTop // 该元素距离父级可视区域顶部的高度
+    return top <= viewPortHeight
+}
+```
+
+#### 第二种、getBoundingClientRect
+
+返回元素的大小及其相对于视口的位置，拥有`left`, `top`, `right`, `bottom`, `x`, `y`, `width`, 和 `height`属性。如果是标准盒子模型，元素的尺寸等于`width/height` + `padding` + `border-width`的总和。如果`box-sizing: border-box`，元素的的尺寸等于 `width/height`。
+
+```css
+const target = document.querySelector('.target');
+const clientRect = target.getBoundingClientRect();
+console.log(clientRect);
+```
+
+![rect](/imgs/rect.png)
+
+当页面发生滚动的时候，`top`与`left`属性值都会随之改变
+
+如果一个元素在视窗之内的话，那么它一定满足下面四个条件：
+
+- top 大于等于 0
+- left 大于等于 0
+- bottom 小于等于视窗高度
+- right 小于等于视窗宽度
+
+#### 第三种、Intersection Observer
+
+`Intersection Observer` 即重叠观察者，从这个命名就可以看出它用于判断两个元素是否重叠，因为不用进行事件的监听，性能方面相比`getBoundingClientRect`会好很多。
+
+##### API
+
+```js
+// 创建观察者
+var io = new IntersectionObserver(callback, option);
+// 构造函数的返回值是一个观察器实例。实例的observe方法可以指定观察哪个 DOM 节点。
+    // 开始观察
+	// 如果要观察多个节点，就要多次调用这个方法。
+    io.observe(document.getElementById('example'));
+    // 停止观察
+    io.unobserve(element);
+    // 关闭观察器
+    io.disconnect();
+```
+
+上面代码中，`IntersectionObserver`是浏览器原生提供的构造函数，接受两个参数：`callback`是可见性变化时的回调函数，`option`是配置对象（该参数可选）。
+
+##### callback 参数
+
+目标元素的可见性变化时，就会调用观察器的回调函数`callback`。
+
+`callback`一般会触发两次。一次是目标元素刚刚进入视口（开始可见），另一次是完全离开视口（开始不可见）。
+
+```js
+var io = new IntersectionObserver(
+  entries => {
+    console.log(entries);
+  }
+);
+```
+
+上面代码中，回调函数采用的是[箭头函数](http://es6.ruanyifeng.com/#docs/function#箭头函数)的写法。`callback`函数的参数（`entries`）是一个数组，每个成员都是一个[`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)对象。举例来说，如果同时有两个被观察的对象的可见性发生变化，`entries`数组就会有两个成员。
+
+##### IntersectionObserverEntry 对象
+
+`IntersectionObserverEntry`对象提供目标元素的信息，一共有六个属性。
+
+```js
+
+{
+  time: 3893.92,
+  rootBounds: ClientRect {
+    bottom: 920,
+    height: 1024,
+    left: 0,
+    right: 1024,
+    top: 0,
+    width: 920
+  },
+  boundingClientRect: ClientRect {
+     // ...
+  },
+  intersectionRect: ClientRect {
+    // ...
+  },
+  intersectionRatio: 0.54,
+  target: element
+}
+time：可见性发生变化的时间，是一个高精度时间戳，单位为毫秒
+target：被观察的目标元素，是一个 DOM 节点对象
+rootBounds：根元素的矩形区域的信息，getBoundingClientRect()方法的返回值，如果没有根元素（即直接相对于视口滚动），则返回null
+boundingClientRect：目标元素的矩形区域的信息
+intersectionRect：目标元素与视口（或根元素）的交叉区域的信息
+intersectionRatio：目标元素的可见比例，即intersectionRect占boundingClientRect的比例，完全可见时为1，完全不可见时小于等于0
+```
+
+##### Option 对象
+
+`threshold`属性决定了什么时候触发回调函数。它是一个数组，每个成员都是一个门槛值，默认为`[0]`，即交叉比例（`intersectionRatio`）达到`0`时触发回调函数。
+
+```
+new IntersectionObserver(
+  entries => {/* ... */}, 
+  {
+    threshold: [0, 0.25, 0.5, 0.75, 1]
+  }
+);
+```
+
+用户可以自定义这个数组。比如，`[0, 0.25, 0.5, 0.75, 1]`就表示当目标元素 0%、25%、50%、75%、100% 可见时，会触发回调函数。
+
+root属性和rootMargin属性：IntersectionObserver API 支持容器内滚动。`root`属性指定目标元素所在的容器节点（即根元素）。注意，容器元素必须是目标元素的祖先节点。
+
+```js
+var opts = { 
+  root: document.querySelector('.container'),
+  rootMargin: "500px 0px" 
+};
+
+var observer = new IntersectionObserver(
+  callback,
+  opts
+);
+```
+
+##### 注意点
+
+IntersectionObserver API 是异步的，不随着目标元素的滚动同步触发。
+
+规格写明，`IntersectionObserver`的实现，应该采用`requestIdleCallback()`，即只有线程空闲下来，才会执行观察器。这意味着，这个观察器的优先级非常低，只在其他任务执行完，浏览器有了空闲才会执行。
+
+### 案例分析
+
+实现：创建了一个十万个节点的长列表，当节点滚入到视窗中时，背景就会从红色变为黄色
+
+```html
+// html
+<div class="container"></div>
+```
+
+```css
+// css样.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.target {
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+    background: red;
+}式
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.target {
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+    background: red;
+}
+```
+
+```js
+// 往container插入1000个元素
+const $container = $(".container");
+
+// 插入 100000 个 <div class="target"></div>
+function createTargets() {
+  const htmlString = new Array(100000)
+    .fill('<div class="target"></div>')
+    .join("");
+  $container.html(htmlString);
+}
+createTargets()
+// 获取所有目标子元素
+const $targets = $(".target");
+```
+
+首先使用`getBoundingClientRect`方法进行判断元素是否在可视区域
+
+```js
+    function isInViewPort(element) {
+      const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+      const viewHeight =
+              window.innerHeight || document.documentElement.clientHeight;
+      const { top, right, bottom, left } = element.getBoundingClientRect();
+
+      return top >= 0 && left >= 0 && right <= viewWidth && bottom <= viewHeight;
+    }
+    $(window).on("scroll", () => {
+      console.log("scroll !");
+      $targets.each((index, element) => {
+        if (isInViewPort(element)) {
+          $(element).css("background-color", "yellow");
+        }
+      });
+    });
+
+// 开始监听scroll事件，判断页面上哪些元素在可视区域中，如果在可视区域中则将背景颜色设置为yellow
+$(window).on("scroll", () => {
+    console.log("scroll !");
+    $targets.each((index, element) => {
+        if (isInViewPort(element)) {
+            $(element).css("background-color", "yellow");
+        }
+    });
+});
+```
+
+通过上述方式，可以看到可视区域颜色会变成黄色了，但是可以明显看到有卡顿的现象，原因在于我们绑定了`scroll`事件，`scroll`事件伴随了大量的计算，会造成资源方面的浪费
+
+下面通过`Intersection Observer`的形式同样实现相同的功能
+
+```js
+    function getYellow(entries) {
+      entries.forEach(entry => {
+        $(entry.target).css("background-color", "yellow");
+      });
+    }
+    const observer = new IntersectionObserver(getYellow, { threshold: 0.8 });
+    $targets.each((index, element) => {
+      observer.observe(element);
+    });
+```
+
+#### 惰性加载（lazy load）
+
+我们希望某些静态资源（比如图片），只有用户向下滚动，它们进入视口时才加载，这样可以节省带宽，提高网页性能。这就叫做"惰性加载"。
+
+```js
+function query(selector) {
+  return Array.from(document.querySelectorAll(selector));
+}
+
+var observer = new IntersectionObserver(
+  function(changes) {
+    changes.forEach(function(change) {
+      var container = change.target;
+      var content = container.querySelector('template').content;
+      container.appendChild(content);
+      observer.unobserve(container);
+    });
+  }
+);
+
+query('.lazy-loaded').forEach(function (item) {
+  observer.observe(item);
+});
+```
+
+#### 无限滚动
+
+```js
+var intersectionObserver = new IntersectionObserver(
+  function (entries) {
+    // 如果不可见，就返回
+    if (entries[0].intersectionRatio <= 0) return;
+    loadItems(10);
+    console.log('Loaded new items');
+  });
+
+// 开始观察
+intersectionObserver.observe(
+  document.querySelector('.scrollerFooter')
+);
+```
+
+无限滚动时，最好在页面底部有一个页尾栏（又称[sentinels](https://www.ruanyifeng.com/blog/2016/11/sentinels)）。一旦页尾栏可见，就表示用户到达了页面底部，从而加载新的条目放在页尾栏前面。这样做的好处是，不需要再一次调用`observe()`方法，现有的`IntersectionObserver`可以保持使用。
