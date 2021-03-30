@@ -43,7 +43,7 @@ module.exports = {
       ],
       '/vue/': [
         utils.genSidebar({title: 'vue2.0', children: fileHelper.getFileName(rootPath+'/vue/', 'vue2.0'), sidebarDepth: 2}),
-        utils.genSidebar({title: 'vue3.0', children: fileHelper.getFileName(rootPath+'/vue/', 'vue3.0')})
+        utils.genSidebar({title: 'vue3.0', children: fileHelper.getFileName(rootPath+'/vue/', 'vue3.0'), sidebarDepth: 2})
       ],
       '/js/': [
         utils.genSidebar({title: 'js', children: fileHelper.getFileName(rootPath+'/js/'), sidebarDepth: 2})
