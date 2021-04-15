@@ -8,6 +8,8 @@ https://juejin.cn/post/6844903986479251464
 
 https://juejin.cn/post/6844904004007247880
 
+https://chenshaotang.com/     陈少棠博客
+
 ## 一、JS数据类型-概念
 
 ### 1. 7种原始类型
@@ -147,6 +149,68 @@ document.getElementById('div').insertAdjacentText('beforeend', a+'')  // 显示1
  5. 元素都为BigInt的数组可以进行sort。
 
  6. BigInt可以正常地进行位运算，如|、&、<<、>>和^
+
+### 7.JS对象属性中get/set与getter/setter
+
+#### 属性
+
+属性是存储在特定命名位置的值，是对象的内容，属性并不直接存储在对象容器内部。属性有两种类型:数据属性和访问器属性。属性具备了属性描述符，用来描述属性拥有的特性。
+
+#### 属性描述符
+
+属性描述符用来描述属性特性的(只有在内部才能用的特性),配置属性是否可读，是否可写，是否可枚举，值是多少，读写。
+
+Object.definePrOperty(obj,'a',{value:2,writable:true,configurable:true})第三个参数就是属性描述符对象 ，首先它是个对象，它有自己的属性，其次它是属性a的属性描述符，用来配置属性。
+
+定义这些特性为了实现JavaScript引擎用的，因此再JavaScript中不能直接访问它们。为了表示特征是内部值，ES规范把它们放在了两对方括号中，例如[[Enumerable]]。
+
+**访问器属性不能直接定义，必须使用Object.defineProperty()来定义。**
+
+#### 数据属性
+
+数据属性包含一个数据值的位置。在这个位置可以读取和写入值。共有四个描述其行为的特征:
+
+- [[Configurable]]：配置，表示能否删除修改属性的特性，或者把属性修改为访问器属性。默认true
+- [[Enumerable]]：枚举，表示能否通过for-in循环返回属性。默认true
+- [[Writable]]：可写，表示能否修改属性值。默认true
+- [[Value]]：属性的数据值。读写属性值从该位置。默认undefined
+
+#### 访问器属性
+
+访问器属性不包含数据值；它们包含一对getter和setter函数。共有四个描述其行为的特征:
+
+- [[Configurable]]：配置，表示能否删除修改属性的特性，或者把属性修改为访问器属性。默认true
+- [[Enumerable]]：枚举，表示能否通过for-in循环返回属性。默认true
+- [[Get]]：在读取属性值时调用的函数。默认undefined
+- [[Set]]：在写入属性值时调用的函数。默认undefined
+
+**当个一个属性定义getter、setter或者两者都有时，这个属性就成了访问器属性**
+
+#### [[Get]]/[[Put]]是什么
+
+首先要明确一点，[[Get]]和[[Put]]是对象默认的内置操作，可以理解为算法函数。它是在访问属性时的操作，例如通过obj.a访问a属性时就是实现了[[Get]]操作，它会先找到相同的属性名，找到才要返回属性值。
+
+没有找到就会按照[[Get]]算法的设计，沿着原型链找，找不到会返回undefined。
+
+[[Put]]被触发时，取决于许多因素，最重要的有对象中是否已经存在这个属性。如果已经存在，算法大致会检查下面这些内容：
+
+1. 属性是否是访问描述符？如果是并且存在setter就调用setter
+2. 属性的数据描述符中writable是否是false？如果是，在非严格模式下静默失败，在严格模式下抛出TypeError异常。
+3. 如果都不是，将该值设置为属性的值。
+
+#### get/set和getter/setter
+
+[[Get]]和[[Set]]：当属性拥有这两个特性时，属性就是访问器属性。代表着在访问属性或者写入属性值时，对返回值做附加的操作。而这个操作就是**getter/setter函数**。
+
+它们只能应用到单个属性上，无法应用在整个对象上。getter/setter是隐藏函数，是访问器属性默认拥有的隐藏函数。在读取访问器属性时调用getter，返回有效的值；在写入访问器属性时调用setter函数并传入新值。
+
+不管是对象文字语法中的get a(){...}，还是的defineProperty(..)中的显式定义，二者都会在对象中创造一个不包含值得属性，对于这个属性的访问会自动调用一个隐藏函数，它的返回值会被当做属性访问的返回值：
+
+**设置getter会覆盖默认的[[Get]]操作，setter会覆盖默认得[[Put]],也被称为赋值操作**
+
+#### 总结
+
+属性是拥有自己的特性的，**主要用来描述属性是否可以进行修改枚举配置的**。我们访问对象的属性时就是**[[Get]]操作**，写入就是**[[Put]]操作**，根据算法找到对应的属性。如果要对属性值进行附加操作时，就需要**设置get/set特性**，此时属性也就会**变成访问器属性**，然后调用默认的**隐藏的getter/setter函数**对属性进行操作。然后返回属性值。这就是整个流程，vue框架中双向绑定就是用到了这些概念来完成数据监听的，对象属性可以说是js中一个很核心的概念了。
 
 ## 二、JS数据类型-检测
 
@@ -516,6 +580,18 @@ let使JS发生革命性的变化，让JS有函数作用域变为了块级作用�
 // i = 3
 ...
 ```
+
+### 上下文环境、作用域、作用域链
+
+1. **作用域是在代码写下来就产生了，执行环境在代码执行时才被创建，作用域链是在执行环境里才被创建**。
+2. 执行环境在代码执行完了之后被清除。
+3. 函数执行环境主要经历了几个阶段：
+   1. 在创建函数时，会创建相应的执行环境
+   2. 创建变量对象/活动对象
+   3. 创建作用域链、赋值this
+   4. 函数被调用，执行环境会把压入栈中
+   5. 代码在执行环境在被执行
+   6. 执行环境从执行环境栈出栈，被回收
 
 ## 五、原型链
 
@@ -1031,7 +1107,7 @@ while (ary.some(Array.isArray)) {
 
 ### 2.数组中的高阶函数
 
-#### 1.map
+#### 1. map
 
 - 参数:接受两个参数，一个是回调函数，一个是回调函数的this值(可选)。
 
@@ -1105,4 +1181,67 @@ nums.sort(function(a, b) {
 当然还有一个需要注意的情况，就是比较函数不传的时候，是如何进行排序的？
 
 答案是将数字转换为字符串，然后根据字母unicode值进行升序排序，也就是根据字符串的比较规则进行升序排序。
+
+
+
+
+
+
+
+
+
+一、寄生式组合继承
+
+```js
+    // 寄生式组合继承
+    function Father (name) {
+      this.name = name
+      this.text = [1, 2, 3]
+    }
+    Father.prototype.sayHi = function () {
+      console.log(this.name)
+    }
+    function Son (name, age) {
+      Father.call(this, name)
+      this.age = age
+    }
+    // Son.prototype = new Father()
+    Son.prototype = Object.create(Father.prototype)
+    Son.prototype.constructor = Son
+    Son.prototype.sayAge = function () {
+      console.log(this.age)
+    }
+    let son = new Son('text', 1)
+```
+
+二、new关键字的作用
+
+(1) 在内存中创建一个新对象。
+
+(2) 这个新对象内部的[[Prototype]]指针被赋值为构造函数的 prototype 属性。
+
+(3) 构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
+
+(4) 执行构造函数内部的代码（给新对象添加属性）。
+
+(5) 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+
+```js
+class Person { 
+ constructor(override) { 
+ this.foo = 'foo'; 
+ if (override) { 
+ return { 
+ bar: 'bar' 
+ }; 
+ } 
+ } 
+} 
+let p1 = new Person(), 
+ p2 = new Person(true); 
+console.log(p1); // Person{ foo: 'foo' } 否则返回刚创建的新对象
+console.log(p1 instanceof Person); // true 
+console.log(p2); // { bar: 'bar' }  如果构造函数返回非空对象，就返回该对象
+console.log(p2 instanceof Person); // false 
+```
 
